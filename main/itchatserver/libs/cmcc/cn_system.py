@@ -1,35 +1,16 @@
-import socket
+
 import time
 import requests
 from bs4 import BeautifulSoup
 import random
 import json
 import _thread
-from requests.auth import HTTPProxyAuth
+
 import iot_system
 import importlib as imp
 import threading
 
-def proxy_load():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-    finally:
-        s.close()
 
-    proxies = ''
-    if ip[0:7] == '10.244.':
-        # 在公司
-        proxies = {'http': 'http://chinafishz:qwer1234@10.244.121.93:808','https': 'https://chinafishz:qwer1234@10.244.121.93:808'}
-        auth = HTTPProxyAuth('chinafishz', 'qwer1234')
-        #proxies = {}
-        #auth = None
-    else:
-        proxies = {'http': 'http://chinafishz:qwer1234@79d61a65dc3eb552.natapp.cc:29980',
-                        'https': 'https://chinafishz:qwer1234@79d61a65dc3eb552.natapp.cc:29980'}
-        auth = HTTPProxyAuth('chinafishz', 'qwer1234')
-    return proxies,auth
 
 
 def sms_4a(r, url, param, header, _proxies, _auth):
@@ -132,9 +113,9 @@ def iot_login(r, _system_name_list, _proxies, _auth):
 
 # =======================测试用==========================
 def main_test():
-    send_sms1 = '41608446240A6782F2A0F031426EDC066CF24674F3F0586A4D5FF056D75FF4AB'
-    send_sms2 = '41608446240A6782F2A0F031426EDC066CF24674F3F0586AF1E3983438A092966F9B57FEF7B22FB7D01E1BDF5B4421CB6069ED5C9B03B580'
-    cn_pwd_saw = 'QWer!@34'
+    send_sms1 = ''
+    send_sms2 = ''
+    cn_pwd_saw = ''
 
     # _proxies = {'http': 'http://chinafishz:qwer1234@79d61a65dc3eb552.natapp.cc:29980',
     #             'https': 'https://chinafishz:qwer1234@79d61a65dc3eb552.natapp.cc:29980'}

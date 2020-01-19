@@ -3,6 +3,7 @@ from itchat.content import TEXT, PICTURE, RECORDING, ATTACHMENT, VIDEO
 from mainprocess import MainProcess
 import json
 
+
 WIFE_USERNAME = ''
 
 def load_contact(update=False):
@@ -105,7 +106,7 @@ def to_wife(msg):
     except:
         pass
 
-    if group_name in ['盛世名门群主楼长群','名门团队', '吃花生🥜', '宏城汇新希望群（物业交流）', '盛世名门业主代表沟通交流群', '宏城汇商场事宜沟通群', '商场围闭沟通群', '测试群']:
+    if group_name in ['测试群']:
         user_name = msg.ActualNickName
 
     if msg.type == TEXT:
@@ -125,13 +126,22 @@ def to_wife(msg):
 @itchat.msg_register([TEXT], isFriendChat=True, isGroupChat=True)
 def msg_receive_text(msg):
     to_wife(msg)
-    MainProcess.text_process(msg)
-
-
+    response = MainProcess.text_process(msg)
+    if response is None:
+        return
+    elif type(response) is list:
+        if response[0] == 'error':
+            return response[1]
+        elif response[0] == 'sucess':
+            deal_result = MainProcess.order_deal(response[1])
+        elif response[0] == 'warning':
+            itchat.send(response[2])
+            return response[1]
+            
 def start():
     itchat.auto_login(hotReload=True, enableCmdQR=False, loginCallback=login_success, exitCallback=login_out)
     itchat.run()
 
 
-if __name__ == __main__:
+if __name__ == "__main__":
     start()

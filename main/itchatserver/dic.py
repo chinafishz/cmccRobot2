@@ -1,4 +1,4 @@
-import json
+
 
 ORDER_DIC = {
     '#4a':
@@ -7,9 +7,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': '4a',
             'actual_order': '#4a_login_clone',
+            'need_check':['type'],
             1: {
                 'name': '无用参数',
-                'property': {'type': int},
+                'property': {'type': [int]},
             },
         },
     '#sms':
@@ -18,13 +19,14 @@ ORDER_DIC = {
             'param_count': 2,
             'system': '4a',
             'actual_order': '#4a_sms',
+             'need_check':['type', 'length'],
             1: {
                 'name': '4A登陆验证码',
-                'property': {'type': int, 'length': 6},
+                'property': {'type': [int], 'length': [6]},
             },
             2: {
                 'name': 'loginForm码',
-                'property': {'type': int, 'length': [19, 20]},
+                'property': {'type': [int], 'length': [19, 20]},
             }
         },
     '#iot':
@@ -33,9 +35,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': '4a',
             'actual_order': '#4a_iot',
+             'need_check':['type'],
             1: {
                 'name': '登陆iot',
-                'property': {'type': str},
+                'property': {'type': [str]},
             }
         },
 
@@ -46,10 +49,11 @@ ORDER_DIC = {
             'param_count': 1,
             'system': 'iot',
             'actual_order': '#iot_puk',
+            'need_check': ['type', 'length', 'first_num'],
             'whitelist': ['深**徕纳智能科技有限公司', '深**禾锐通信有限公司','统**信(苏州)有限公司广州分公司', '统**信（苏州）有限公司广州分公司'],
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': [13,11], 'first_num': '1'},
+                'property': {'type': [int], 'length': [13,11], 'first_num': ['1']},
                 }
         },
     '#查实名':
@@ -58,9 +62,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': 'iot',
             'actual_order': '#iot_puk',
+            'need_check': ['type', 'length', 'first_num'],
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': [13,11], 'first_num': '1'}
+                'property': {'type': [int], 'length': [13,11], 'first_num': ['1']}
             }
 
         },
@@ -70,9 +75,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': 'iot',
             'actual_order': '#iot_status',
+            'need_check': ['type', 'length', 'first_num'],
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': [13,11], 'first_num': '1'}
+                'property': {'type': [int], 'length': [13,11], 'first_num': ['1']}
             }
 
         },
@@ -82,9 +88,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': 'iot',
             'actual_order': '#iot_outstanding_fees',
+            'need_check': ['type', 'length', 'first_num'],
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': [13,11], 'first_num': '1'}
+                'property': {'type': [int], 'length': [13,11], 'first_num': ['1']}
             }
 
         },
@@ -94,9 +101,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': 'iot',
             'actual_order': '#iot_outstanding_fees',
+            'need_check': ['type', 'length', 'first_num'],
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': [13,11], 'first_num': '1'}
+                'property': {'type': [int], 'length': [13,11], 'first_num': ['1']}
             }
 
         },
@@ -114,7 +122,7 @@ ORDER_DIC = {
             # },
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': 11, 'first_num': '1'}
+                'property': {'type': [int], 'length': [11], 'first_num': ['1']}
             }
         },
     '#申请开机':
@@ -123,9 +131,10 @@ ORDER_DIC = {
             'param_count': 1,
             'system': 'iot',
             'actual_order': '#open&stop_shenqing',
+            'need_check': ['type', 'length', 'first_num'],
             1: {
                 'name': '物联网号码',
-                'property': {'type': int, 'length': [11,13], 'first_num': '1'}
+                'property': {'type': [int], 'length': [11,13], 'first_num': ['1']}
             }
         }
     }

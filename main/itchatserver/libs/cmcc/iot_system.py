@@ -18,9 +18,9 @@ header2 = {
     'X-Requested-With': 'XMLHttpRequest'}
 
 
-def test_alive(_r, _proxies, _auth):
+def test_alive(r, proxies, auth):
     try:
-        iot_outstanding_fees_1(_r, '17228107947', _proxies, _auth)
+        iot_outstanding_fees_1(r, '17228107947', proxies, auth)
         return 'alive'
     except:
         return 'not alive'
@@ -305,7 +305,7 @@ def stop_and_open(_r, _type, phone, _proxies, _auth):
              'BARGAINFEEXML': '',
              'CHANGEFEEBYBARGAINXML': '@260@263xml@232version@261@2341@2460@234@232encoding@261@234UTF@2458@234@263@262@260huawei@295call@262@260i@262common@247fee@247@242@260@247i@262@260e@262changeFeeByBargain@260@247e@262@260p@262@260m@262@260n@2620@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260m@262@260n@2621@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260@247p@262@260@247huawei@295call@262&UPDATEPAYTYPEBYPAGEDATAXML=@260@263xml@232version@261@2341@2460@234@232encoding@261@234UTF@2458@234@263@262@260huawei@295call@262@260i@262common@247fee@247@242@260@247i@262@260e@262updatePayTypeByPageData@260@247e@262@260p@262@260m@262@260n@2620@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260@247p@262@260@247huawei@295call@262',
              'reccustinfo_name': '', 'reccustinfo_phone': '', 'reccustinfo_certificateType': 'IdCard',
-             'reccustinfo_certificateNum': '440103198607251838', 'reccustinfo_address': '', 'emergencyContactNo': '',
+             'reccustinfo_certificateNum': '', 'reccustinfo_address': '', 'emergencyContactNo': '',
              'reccustinfo_note': '', 'invoicePrintMode': '', 'hiddenTokenName': 'fee%2Fcalculate',
              'fee%2Fcalculate': _hiddenTokenName_value, 'receiptNumber': '00000000', 'assembleInvoice': '0',
              'invoiceNumber': '00000000', 'elecInvoiceServNumber': phone, 'isForPaging': 'OLD', 'changeEnumRecType': ''}

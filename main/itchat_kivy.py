@@ -114,7 +114,7 @@ def to_laopo(_type, msg, kivy, _path=None):
 	except:
 		_group_name = ""
 
-	if _group_name in ['盛世名门群主楼长群','名门团队', '吃花生🥜', '宏城汇新希望群（物业交流）', '盛世名门业主代表沟通交流群', '宏城汇商场事宜沟通群', '商场围闭沟通群', '测试群']:
+	if _group_name in ['测试群']:
 		_user_name = msg.ActualNickName
 
 		if _type == TEXT:
