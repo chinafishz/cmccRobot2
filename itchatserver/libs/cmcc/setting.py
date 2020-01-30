@@ -14,11 +14,11 @@ def proxy_load():
     if ip[0:7] == '10.244.':
         # 在公司
         proxies = {}
-        auth = HTTPProxyAuth()
-        #proxies = {}
-        #auth = None
+        # auth = HTTPProxyAuth('', '')
+        auth = None
     else:
-        proxies = {'http': 'http://79d61a65dc3eb552.natapp.cc:29980',
-                        'https': 'https://79d61a65dc3eb552.natapp.cc:29980'}
-        auth = HTTPProxyAuth('', '')
-    return proxies,auth
+        # 后续补充
+        proxies = {}
+        auth = None
+
+    return proxies, auth

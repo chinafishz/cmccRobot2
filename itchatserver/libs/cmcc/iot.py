@@ -1,13 +1,8 @@
 
 # -*-encoding:utf-8-*-
-import socket
-import time
 import random
 from bs4 import BeautifulSoup
-from requests.auth import HTTPProxyAuth
-import cn_system
-import importlib as imp
-import os
+
 
 header = {
     'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)',
@@ -197,7 +192,7 @@ def iot_phone_query_base_setp2(r, s2, phone_num, _proxies, _auth):
               'com_MenuID': cn_soup('com_MenuID'), 'com_ServNum': '', 'com_TouchNum': '',
               'com_Password': cn_soup('com_Password'), 'com_OrgID': cn_soup('com_OrgID'), 'com_RoamOrgID': '',
               'com_PassChangeDate': cn_soup('com_PassChangeDate'), 'com_OperType': cn_soup('com_OperType'),
-              'com_Manager': '0', 'com_Level': '', 'com_ContactPhone': '13922204911',
+              'com_Manager': '0', 'com_Level': '', 'com_ContactPhone': '13800138000',
               'com_MacAddress': cn_soup('com_MacAddress'), 'com_OnDuty': '0', 'com_ShareStore': '', 'com_BirthDay': '',
               'com_WorkDate': '', 'com_CertID': '', 'com_Sex': '', 'com_EducationLevel': '', 'com_TotalLevel': '',
               'com_SkillLevel': '', 'com_TrainLevel': '', 'com_ComityLevel': '', 'com_Operator_type': '0',
@@ -305,45 +300,13 @@ def stop_and_open(_r, _type, phone, _proxies, _auth):
              'BARGAINFEEXML': '',
              'CHANGEFEEBYBARGAINXML': '@260@263xml@232version@261@2341@2460@234@232encoding@261@234UTF@2458@234@263@262@260huawei@295call@262@260i@262common@247fee@247@242@260@247i@262@260e@262changeFeeByBargain@260@247e@262@260p@262@260m@262@260n@2620@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260m@262@260n@2621@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260@247p@262@260@247huawei@295call@262&UPDATEPAYTYPEBYPAGEDATAXML=@260@263xml@232version@261@2341@2460@234@232encoding@261@234UTF@2458@234@263@262@260huawei@295call@262@260i@262common@247fee@247@242@260@247i@262@260e@262updatePayTypeByPageData@260@247e@262@260p@262@260m@262@260n@2620@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260@247p@262@260@247huawei@295call@262',
              'reccustinfo_name': '', 'reccustinfo_phone': '', 'reccustinfo_certificateType': 'IdCard',
-             'reccustinfo_certificateNum': '', 'reccustinfo_address': '', 'emergencyContactNo': '',
+             'reccustinfo_certificateNum': '440103198607251838', 'reccustinfo_address': '', 'emergencyContactNo': '',
              'reccustinfo_note': '', 'invoicePrintMode': '', 'hiddenTokenName': 'fee%2Fcalculate',
              'fee%2Fcalculate': _hiddenTokenName_value, 'receiptNumber': '00000000', 'assembleInvoice': '0',
              'invoiceNumber': '00000000', 'elecInvoiceServNumber': phone, 'isForPaging': 'OLD', 'changeEnumRecType': ''}
     s = _r.post(url, data=param, auth=_auth, proxies=_proxies, cookies=cn_cookies3)
     return ''.join(s.text).split()[0]
 
-
-# 徕纳500:有500个号码加流量池时因停机无法加入，而需要在复通同时加回
-def iot_laina500(_r, phone, _proxies, _auth):
-    _step_result = '指令：徕纳500\n号码：%s' %phone
-
-    try:
-        _step_result = _step_result + '\n步骤1：是否徕纳500号码'
-
-        # 第一步先查是否在徕纳500.txt里面的号码
-        if process_matching_infile(phone, 'client/laina500.txt') is False:
-            _step_result =  _step_result + '\n非目标号码，请查核'
-            return _step_result
-        _step_result = _step_result + '\n成功\n步骤2:是否申请停机'
-
-        # 第二歩查看号码状态
-        _result_status = ''.join(iot_status(_r, phone, _proxies, _auth)).split()[0]
-        if _result_status != '申请停机':
-            _step_result = _step_result + '号码状态为：%s，需转人工判断' % _result_status
-            return _step_result
-        _step_result = _step_result + '\n成功\n步骤3:操作申请开机'
-
-        # 第三歩申请开机
-        _result = stop_and_open(_r, phone, '申请开机', _proxies, _auth)
-
-    except:
-        _step_result = _step_result + '\n出现错误，未能完成剩余步骤'
-    else:
-        _step_result = '办理完成'
-    finally:
-        return _step_result
-
-    # 第四步变更标识
 
 
 

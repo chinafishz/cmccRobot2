@@ -132,6 +132,7 @@ ORDER_DIC = {
             'system': 'iot',
             'actual_order': '#open&stop_shenqing',
             'need_check': ['type', 'length', 'first_num'],
+            'whitelist': ['深**徕纳智能科技有限公司', '深**禾锐通信有限公司'],
             1: {
                 'name': '物联网号码',
                 'property': {'type': [int], 'length': [11,13], 'first_num': ['1']}

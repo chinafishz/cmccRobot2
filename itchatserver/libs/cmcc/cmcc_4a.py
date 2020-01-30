@@ -1,14 +1,9 @@
-
 import time
-import requests
 from bs4 import BeautifulSoup
 import random
 import json
 import _thread
 
-import iot_system
-import importlib as imp
-import threading
 
 
 
@@ -89,8 +84,7 @@ def iot_login(r, _system_name_list, _proxies, _auth):
               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
               'Accept-Language': 'en-US,en;q=0.5', 'Accept-Encoding': 'gzip, deflate'}
 
-    #记录，看一下改密码后是否都是一样
-    _system_name_list = '物联网系统前台|e228568c23b8443a927555a6e5a423d2|cb26fbcb34ae463fb1f9ec41ca2057a9'
+    # TODO:看一下改密码后是否都是一样    _system_name_list = '物联网系统前台|e228568c23b8443a927555a6e5a423d2|cb26fbcb34ae463fb1f9ec41ca2057a9'
     appResAccountList = _system_name_list.split('|')[1]
     id_num = _system_name_list.split('|')[2]
     r.post('https://4a.gmcc.net/page/resource/resourceQuery.do?',
@@ -108,62 +102,5 @@ def iot_login(r, _system_name_list, _proxies, _auth):
     url = 'https://4a.gmcc.net/sso.do?method=appssoData&accID=' + appResAccountList + '&resID=' + id_num + '&softname=webAppByIE&date=' + str(
         time.time()).replace('.', '') + str(random.randint(1, 9))
     s = r.get(url, headers=header, allow_redirects=True, verify=False, proxies=_proxies, auth=_auth)
-    return 'success', 'iot'
+    return 'iot登录成功'
 
-
-# =======================测试用==========================
-def main_test():
-    send_sms1 = ''
-    send_sms2 = ''
-    cn_pwd_saw = ''
-
-    # _proxies = {'http': 'http://chinafishz:qwer1234@79d61a65dc3eb552.natapp.cc:29980',
-    #             'https': 'https://chinafishz:qwer1234@79d61a65dc3eb552.natapp.cc:29980'}
-    # _auth = HTTPProxyAuth('chinafishz', 'qwer1234')
-    _proxies = {}
-    _auth = None
-
-    _r = requests.session()
-
-    loginForm = login_4a_1(_r, send_sms1, send_sms2, _proxies, _auth)
-    cn_sms_pwd = input()
-    result = login_4a_2(_r, cn_pwd_saw, cn_sms_pwd, loginForm, _proxies, _auth)
-    print(result)
-
-    cn_iot = input()
-    iot_login(_r, cn_iot, _proxies, _auth)
-    iot_system.iot_status(_r, '1440058246465', _proxies, _auth)
-    thread = main_test_thread(1, 'thread-1', 1, _r, _proxies, _auth)
-    thread.start()
-
-
-class main_test_thread(threading.Thread):
-    def __init__(self, thread_id, name, counter, _r, _proxies, _auth):
-        threading.Thread.__init__(self)
-        self.threadID = thread_id
-        self.name = name
-        self.counter = counter
-        self._r = _r
-        self._proxies = _proxies
-        self._auth = _auth
-
-    def run(self):
-        try:
-            while True:
-                a = input()
-                if a == 'laina':
-                    a = iot_system.iot_laina500(self._r,'1064891599533', self._proxies, self._auth)
-                    print(a)
-                elif a == 'iot':
-                    imp.reload(iot_system)
-                elif a == 'puk':
-                    iot_system.iot_phone_query_base(self._r, '17228124669',self._proxies,self. _auth)
-                    _result = iot_system.iot_puk(self._r, self._proxies, self._auth)
-                    print(_result)
-        except:
-            pass
-
-if __name__ == "__main__":
-    main_test()
-
-# =======================以上为测试用==========================
