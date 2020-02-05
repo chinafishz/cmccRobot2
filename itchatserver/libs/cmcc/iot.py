@@ -2,7 +2,10 @@
 # -*-encoding:utf-8-*-
 import random
 from bs4 import BeautifulSoup
+import  logging
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 header = {
     'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)',
@@ -17,7 +20,8 @@ def test_alive(r, proxies, auth):
     try:
         iot_outstanding_fees_1(r, '17228107947', proxies, auth)
         return 'alive'
-    except:
+    except Exception as e:
+        logger.error(e)
         return 'not alive'
 
 

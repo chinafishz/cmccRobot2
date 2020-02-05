@@ -1,6 +1,6 @@
 import requests
-from dic import ORDER_DIC
-from libs.cmcc.main import CmccProcess
+import dic
+from libs.cmcc.cmcc import CmccProcess
 
 
 
@@ -20,21 +20,20 @@ class MainProcess:
         order_name = text[0].lower()
         if order_name[0] != '#':
             return None  # 不是命令，所以不回复（None)
-        elif ORDER_DIC.get(order_name) is None:
-            return ['error', '%s不是可用的命令' % order_name]
+        elif dic.ORDER_DIC.get(order_name) is None:
+            return ['error', '%s 不是可用的命令' % order_name]
 
         check_order_param_result = self.check_order_param(text)
-        if check_order_param_result[0] == 'error':
-            return check_order_param_result
+        return check_order_param_result
 
     def check_order_param(self, text):
-        order = text[0]
+        order = text[0].lower()
         param = text[1:]
-        need_count = ORDER_DIC.get(order).get('param_count')
+        need_count = dic.ORDER_DIC.get(order).get('param_count')
         if need_count != len(param):
             return ['error', '该命令需要输入%s个参数，但实际输入了%s个' % (need_count, len(param))]
 
-        need_check_list = ORDER_DIC.get(order).get('need_check')
+        need_check_list = dic.ORDER_DIC.get(order).get('need_check')
         property_check_result = {}
         for _param in param:
             property_check_result.update({_param: {}})
@@ -53,10 +52,10 @@ class MainProcess:
                 elif _item == 'first_num':
                     property_check_result[_param].update({'first_num': _param[0]})
 
-        result = {'order_name': order, 'param_count': need_count, 'system': ORDER_DIC.get(order).get('system'),
-                  'actual_order': ORDER_DIC.get(order).get('actual_order')}
+        result = {'order_name': order, 'param_count': need_count, 'system': dic.ORDER_DIC.get(order).get('system'),
+                  'actual_order': dic.ORDER_DIC.get(order).get('actual_order')}
         for param_num in range(need_count):
-            need_property = ORDER_DIC.get(order).get(param_num + 1).get('property')
+            need_property = dic.ORDER_DIC.get(order).get(param_num + 1).get('property')
 
             for _param, _dic in property_check_result.items():
                 _is = True
@@ -70,10 +69,12 @@ class MainProcess:
             if _is is False:
                 _list = []
                 for _i in range(need_count):
-                    _list.append(ORDER_DIC.get(order)[_i + 1]['name'] + ' ')
+                    _list.append(dic.ORDER_DIC.get(order)[_i + 1]['name'] + ' ')
                 return ['error', '参数%s有误,正确的格式为：%s %s' % (_param, order, ''.join(_list))]
         return ['success', result]
 
     def order_deal(self, raw_order):
         if raw_order['system'] in ['iot', '4a']:
-            return CmccProcess.main_process(self.r, raw_order)
+            cmccprrocess = CmccProcess()
+            result = cmccprrocess.main_process(self.r, raw_order)
+            return result
