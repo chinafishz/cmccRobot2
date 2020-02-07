@@ -32,13 +32,17 @@ ORDER_DIC = {
     '#iot':
         {
             'id': 11,
-            'param_count': 1,
+            'param_count': 2,
             'system': '4a',
             'actual_order': '#4a_iot',
-             'need_check':['type'],
+            'need_check': ['type', 'length'],
             1: {
-                'name': '登陆iot',
-                'property': {'type': [str]},
+                'name': '4A登陆验证码',
+                'property': {'type': [int], 'length': [6]},
+            },
+            2: {
+                'name': 'loginForm码',
+                'property': {'type': [int], 'length': [19, 20]},
             }
         },
 

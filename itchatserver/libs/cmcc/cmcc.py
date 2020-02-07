@@ -57,7 +57,7 @@ class CmccProcess:
 
     def iot_system(self, r, raw_order):
         if iot.test_alive(r, self.proxies, self.auth) != 'alive':
-            return 'error', 'iot系统没登陆，请等待管理员操作'
+            return ['error', 'iot系统没登陆，请等待管理员操作']
 
         if raw_order['actual_order'] == '#iot_puk':
             try:
@@ -66,22 +66,22 @@ class CmccProcess:
                 puk = iot.iot_puk(r, self.proxies, self.auth)
             except Exception as e:
                 self.logger.error(e)
-                return 'error', raw_order.get(1) + '的puk查询失败，没有查询结果，请检查输入的号码'
+                return ['error', raw_order.get(1) + '的puk查询失败，没有查询结果，请检查输入的号码']
             else:
                 # 判断是否为白名单公司
                 if entityname in dic.ORDER_DIC['#puk']['whitelist']:
-                    return 'success', '%spuk为：%s'  %(raw_order.get(1), puk)
+                    return ['success', '%spuk为：%s'  %(raw_order.get(1), puk)]
                 else:
-                    return 'warning', '%spuk为：%s'  %(raw_order.get(1), puk), '【注意】%s 公司名称为：%s'  %(raw_order.get(1), entityname)
+                    return ['warning', '%spuk为：%s'  %(raw_order.get(1), puk), '【注意】%s 公司名称为：%s'  %(raw_order.get(1), entityname)]
 
         elif raw_order['actual_order'] == '#iot_status':
             try:
                 result = iot.iot_status(r, raw_order.get(1), self.proxies, self.auth)
             except:
                 self.logger.error(e)
-                return 'error', '%s的状态查询失败，没有查询结果，请检查输入的号码' % raw_order.get(1) 
+                return ['error', '%s的状态查询失败，没有查询结果，请检查输入的号码' % raw_order.get(1) ]
             else:
-                return 'success', '%s状态为：%s' % (raw_order.get(1) , result)
+                return ['success', '%s状态为：%s' % (raw_order.get(1) , result)]
 
         elif raw_order['actual_order'] == '#iot_outstanding_fees':
             try:
@@ -89,9 +89,9 @@ class CmccProcess:
                 result = iot.iot_outstanding_fees_2(r, result_step_1, raw_order.get(1), self.proxies, self.auth)
             except Exception as e:
                 self.logger.error(e)
-                return 'error', '%s的余额查询失败，没有查询结果，请检查输入的号码' % raw_order.get(1)
+                return ['error', '%s的余额查询失败，没有查询结果，请检查输入的号码' % raw_order.get(1)]
             else:
-                return 'success', '%s的余额为：%s' % (raw_order.get(1), result)
+                return ['success', '%s的余额为：%s' % (raw_order.get(1), result)]
 
         #elif raw_order['actual_order'] == '#laina500':
             #result = iot_system.iot_laina500(r, raw_order.get(1), self.proxies, self.auth)
@@ -132,26 +132,33 @@ class CmccProcess:
     def cmcc4a_system(self, r, raw_order):
         if raw_order['actual_order'] == '#4a_login_clone':
             try:
-                loginForm = cmcc_4a.login_4a_1(r, self.send_sms1, self.send_sms2, self.proxies, self.auth)  # 返回值是tuple
-                return 'success', '#sms %s ' % loginForm
+                loginForm = cmcc_4a.login_4a_1(r, self.send_sms1, self.send_sms2, self.proxies, self.auth)
+                return ['success', '#sms %s ' % loginForm]
             except requests.exceptions.ConnectionError as e:
                 self.logger.error(e)
-                return 'error', '访问4a.gmcc.net失败，请检查网络'
+                return ['error', '访问4a.gmcc.net失败，请检查网络']
             except Exception as e:
                 self.logger.error(e)
-                return 'error', '其他错误，请查看日志'
+                return ['error', '其他错误，请查看日志']
 
 
 
         elif raw_order['actual_order'] == '#4a_sms':
             result = cmcc_4a.login_4a_2(r,self.cn_pwd_saw, raw_order.get(1), raw_order.get(2), self.proxies, self.auth) # 返回值是tuple 或者 none
             if result is None:
-                return 'error', '登陆失败'
-            return 'success', result.split(';')  # 直接返回结果，由main处理
+                return ['error', '登陆失败']
+            return ['success', result.split(';')] # 直接返回结果，由main处理
 
         elif raw_order['actual_order'] == '#4a_iot':
-            s = cmcc_4a.iot_login(r, raw_order.get(1), self.proxies, self.auth)
-            return 'success', s
+
+            # 先登录4A
+            raw_order['actual_order'] = '#4a_sms'
+            self.cmcc4a_system(r, raw_order)
+
+            # 登录Iot
+            system_name_list = '物联网系统前台|e228568c23b8443a927555a6e5a423d2|cb26fbcb34ae463fb1f9ec41ca2057a9'
+            s = cmcc_4a.iot_login(r, system_name_list, self.proxies, self.auth)
+            return ['success', s]
 
 
 

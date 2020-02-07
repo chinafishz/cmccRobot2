@@ -19,19 +19,19 @@ all_structs = []
 
 
 class Iface(object):
-    def sayMsg(self, msg):
+    def saytext(self, from_usename, msg):
         """
         Parameters:
+         - from_usename
          - msg
 
         """
         pass
 
-    def invoke(self, cmd, token, data):
+    def saybinary(self, from_usename, data):
         """
         Parameters:
-         - cmd
-         - token
+         - from_usename
          - data
 
         """
@@ -45,24 +45,26 @@ class Client(Iface):
             self._oprot = oprot
         self._seqid = 0
 
-    def sayMsg(self, msg):
+    def saytext(self, from_usename, msg):
         """
         Parameters:
+         - from_usename
          - msg
 
         """
-        self.send_sayMsg(msg)
-        return self.recv_sayMsg()
+        self.send_saytext(from_usename, msg)
+        return self.recv_saytext()
 
-    def send_sayMsg(self, msg):
-        self._oprot.writeMessageBegin('sayMsg', TMessageType.CALL, self._seqid)
-        args = sayMsg_args()
+    def send_saytext(self, from_usename, msg):
+        self._oprot.writeMessageBegin('saytext', TMessageType.CALL, self._seqid)
+        args = saytext_args()
+        args.from_usename = from_usename
         args.msg = msg
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
 
-    def recv_sayMsg(self):
+    def recv_saytext(self):
         iprot = self._iprot
         (fname, mtype, rseqid) = iprot.readMessageBegin()
         if mtype == TMessageType.EXCEPTION:
@@ -70,35 +72,33 @@ class Client(Iface):
             x.read(iprot)
             iprot.readMessageEnd()
             raise x
-        result = sayMsg_result()
+        result = saytext_result()
         result.read(iprot)
         iprot.readMessageEnd()
         if result.success is not None:
             return result.success
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "sayMsg failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "saytext failed: unknown result")
 
-    def invoke(self, cmd, token, data):
+    def saybinary(self, from_usename, data):
         """
         Parameters:
-         - cmd
-         - token
+         - from_usename
          - data
 
         """
-        self.send_invoke(cmd, token, data)
-        return self.recv_invoke()
+        self.send_saybinary(from_usename, data)
+        return self.recv_saybinary()
 
-    def send_invoke(self, cmd, token, data):
-        self._oprot.writeMessageBegin('invoke', TMessageType.CALL, self._seqid)
-        args = invoke_args()
-        args.cmd = cmd
-        args.token = token
+    def send_saybinary(self, from_usename, data):
+        self._oprot.writeMessageBegin('saybinary', TMessageType.CALL, self._seqid)
+        args = saybinary_args()
+        args.from_usename = from_usename
         args.data = data
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
 
-    def recv_invoke(self):
+    def recv_saybinary(self):
         iprot = self._iprot
         (fname, mtype, rseqid) = iprot.readMessageBegin()
         if mtype == TMessageType.EXCEPTION:
@@ -106,20 +106,20 @@ class Client(Iface):
             x.read(iprot)
             iprot.readMessageEnd()
             raise x
-        result = invoke_result()
+        result = saybinary_result()
         result.read(iprot)
         iprot.readMessageEnd()
         if result.success is not None:
             return result.success
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "invoke failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "saybinary failed: unknown result")
 
 
 class Processor(Iface, TProcessor):
     def __init__(self, handler):
         self._handler = handler
         self._processMap = {}
-        self._processMap["sayMsg"] = Processor.process_sayMsg
-        self._processMap["invoke"] = Processor.process_invoke
+        self._processMap["saytext"] = Processor.process_saytext
+        self._processMap["saybinary"] = Processor.process_saybinary
         self._on_message_begin = None
 
     def on_message_begin(self, func):
@@ -142,13 +142,13 @@ class Processor(Iface, TProcessor):
             self._processMap[name](self, seqid, iprot, oprot)
         return True
 
-    def process_sayMsg(self, seqid, iprot, oprot):
-        args = sayMsg_args()
+    def process_saytext(self, seqid, iprot, oprot):
+        args = saytext_args()
         args.read(iprot)
         iprot.readMessageEnd()
-        result = sayMsg_result()
+        result = saytext_result()
         try:
-            result.success = self._handler.sayMsg(args.msg)
+            result.success = self._handler.saytext(args.from_usename, args.msg)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -160,18 +160,18 @@ class Processor(Iface, TProcessor):
             logging.exception('Unexpected exception in handler')
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("sayMsg", msg_type, seqid)
+        oprot.writeMessageBegin("saytext", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
-    def process_invoke(self, seqid, iprot, oprot):
-        args = invoke_args()
+    def process_saybinary(self, seqid, iprot, oprot):
+        args = saybinary_args()
         args.read(iprot)
         iprot.readMessageEnd()
-        result = invoke_result()
+        result = saybinary_result()
         try:
-            result.success = self._handler.invoke(args.cmd, args.token, args.data)
+            result.success = self._handler.saybinary(args.from_usename, args.data)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -183,7 +183,7 @@ class Processor(Iface, TProcessor):
             logging.exception('Unexpected exception in handler')
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("invoke", msg_type, seqid)
+        oprot.writeMessageBegin("saybinary", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -191,15 +191,17 @@ class Processor(Iface, TProcessor):
 # HELPER FUNCTIONS AND STRUCTURES
 
 
-class sayMsg_args(object):
+class saytext_args(object):
     """
     Attributes:
+     - from_usename
      - msg
 
     """
 
 
-    def __init__(self, msg=None,):
+    def __init__(self, from_usename=None, msg=None,):
+        self.from_usename = from_usename
         self.msg = msg
 
     def read(self, iprot):
@@ -213,6 +215,11 @@ class sayMsg_args(object):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
+                    self.from_usename = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
                     self.msg = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
@@ -225,9 +232,13 @@ class sayMsg_args(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('sayMsg_args')
+        oprot.writeStructBegin('saytext_args')
+        if self.from_usename is not None:
+            oprot.writeFieldBegin('from_usename', TType.STRING, 1)
+            oprot.writeString(self.from_usename.encode('utf-8') if sys.version_info[0] == 2 else self.from_usename)
+            oprot.writeFieldEnd()
         if self.msg is not None:
-            oprot.writeFieldBegin('msg', TType.STRING, 1)
+            oprot.writeFieldBegin('msg', TType.STRING, 2)
             oprot.writeString(self.msg.encode('utf-8') if sys.version_info[0] == 2 else self.msg)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -246,14 +257,15 @@ class sayMsg_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-all_structs.append(sayMsg_args)
-sayMsg_args.thrift_spec = (
+all_structs.append(saytext_args)
+saytext_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'msg', 'UTF8', None, ),  # 1
+    (1, TType.STRING, 'from_usename', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'msg', 'UTF8', None, ),  # 2
 )
 
 
-class sayMsg_result(object):
+class saytext_result(object):
     """
     Attributes:
      - success
@@ -287,7 +299,7 @@ class sayMsg_result(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('sayMsg_result')
+        oprot.writeStructBegin('saytext_result')
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.STRING, 0)
             oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
@@ -308,25 +320,23 @@ class sayMsg_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-all_structs.append(sayMsg_result)
-sayMsg_result.thrift_spec = (
+all_structs.append(saytext_result)
+saytext_result.thrift_spec = (
     (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
 )
 
 
-class invoke_args(object):
+class saybinary_args(object):
     """
     Attributes:
-     - cmd
-     - token
+     - from_usename
      - data
 
     """
 
 
-    def __init__(self, cmd=None, token=None, data=None,):
-        self.cmd = cmd
-        self.token = token
+    def __init__(self, from_usename=None, data=None,):
+        self.from_usename = from_usename
         self.data = data
 
     def read(self, iprot):
@@ -339,18 +349,13 @@ class invoke_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I32:
-                    self.cmd = iprot.readI32()
+                if ftype == TType.STRING:
+                    self.from_usename = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.token = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                else:
-                    iprot.skip(ftype)
-            elif fid == 3:
-                if ftype == TType.STRING:
-                    self.data = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.data = iprot.readBinary()
                 else:
                     iprot.skip(ftype)
             else:
@@ -362,18 +367,14 @@ class invoke_args(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('invoke_args')
-        if self.cmd is not None:
-            oprot.writeFieldBegin('cmd', TType.I32, 1)
-            oprot.writeI32(self.cmd)
-            oprot.writeFieldEnd()
-        if self.token is not None:
-            oprot.writeFieldBegin('token', TType.STRING, 2)
-            oprot.writeString(self.token.encode('utf-8') if sys.version_info[0] == 2 else self.token)
+        oprot.writeStructBegin('saybinary_args')
+        if self.from_usename is not None:
+            oprot.writeFieldBegin('from_usename', TType.STRING, 1)
+            oprot.writeString(self.from_usename.encode('utf-8') if sys.version_info[0] == 2 else self.from_usename)
             oprot.writeFieldEnd()
         if self.data is not None:
-            oprot.writeFieldBegin('data', TType.STRING, 3)
-            oprot.writeString(self.data.encode('utf-8') if sys.version_info[0] == 2 else self.data)
+            oprot.writeFieldBegin('data', TType.STRING, 2)
+            oprot.writeBinary(self.data)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -391,16 +392,15 @@ class invoke_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-all_structs.append(invoke_args)
-invoke_args.thrift_spec = (
+all_structs.append(saybinary_args)
+saybinary_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'cmd', None, None, ),  # 1
-    (2, TType.STRING, 'token', 'UTF8', None, ),  # 2
-    (3, TType.STRING, 'data', 'UTF8', None, ),  # 3
+    (1, TType.STRING, 'from_usename', 'UTF8', None, ),  # 1
+    (2, TType.STRING, 'data', 'BINARY', None, ),  # 2
 )
 
 
-class invoke_result(object):
+class saybinary_result(object):
     """
     Attributes:
      - success
@@ -434,7 +434,7 @@ class invoke_result(object):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
-        oprot.writeStructBegin('invoke_result')
+        oprot.writeStructBegin('saybinary_result')
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.STRING, 0)
             oprot.writeString(self.success.encode('utf-8') if sys.version_info[0] == 2 else self.success)
@@ -455,8 +455,8 @@ class invoke_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-all_structs.append(invoke_result)
-invoke_result.thrift_spec = (
+all_structs.append(saybinary_result)
+saybinary_result.thrift_spec = (
     (0, TType.STRING, 'success', 'UTF8', None, ),  # 0
 )
 fix_spec(all_structs)

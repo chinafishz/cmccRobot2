@@ -1,3 +1,5 @@
+import sys
+sys.path.append('.')
 
 from libs.thrift_file.gen_py.test import Transmit
 from libs.thrift_file.gen_py.test.ttypes import *
@@ -12,12 +14,15 @@ class TransmitHandler:
     def __init__(self):
         pass
 
-    def sayMsg(self, msg):
-        print(msg)
+    def saytext(self, from_usename, msg):
+        print(from_usename, msg)
         return 'done'
 
-    def invoke(self,cmd,token,data):
-        pass
+    def saybinary(self,from_usename, data_binary):
+        with open('abc.jpg','wb') as f:
+            f.write(data_binary)
+        print(from_usename)
+        return 'done'
 
 if __name__=="__main__":
     handler = TransmitHandler()

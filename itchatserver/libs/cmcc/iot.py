@@ -3,6 +3,7 @@
 import random
 from bs4 import BeautifulSoup
 import  logging
+import libs.cmcc.setting as setting
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ header2 = {
 
 def test_alive(r, proxies, auth):
     try:
-        iot_outstanding_fees_1(r, '17228107947', proxies, auth)
+        iot_outstanding_fees_1(r, '17249121987', proxies, auth)
         return 'alive'
     except Exception as e:
         logger.error(e)
@@ -190,13 +191,13 @@ def iot_phone_query_base_setp2(r, s2, phone_num, _proxies, _auth):
               'comenuId': cn_soup('comenuId'), 'codirect': 'FALSE', 'com_EntityID': 'AGZGT0000829',
               'com_EntityName': cn_soup('com_EntityName'), 'com_CreateDate': cn_soup('com_CreateDate'),
               'com_Status': cn_soup('com_Status'), 'com_StatusDate': cn_soup('com_StatusDate'), 'com_EditStatus': '0',
-              'com_Region': '200', 'coerrorInfoForControl': '', 'conodeID': 'AGZGT0000829',
+              'com_Region': '200', 'coerrorInfoForControl': '', 'conodeID': setting.load_config_setting('Auth4a', 'self_conode_id', type='item'),
               'conodeName': cn_soup('conodeName'), 'conodeParentID': cn_soup('conodeParentID'),
-              'coentityID': 'AGZGT0000829', 'cootherParam': cn_soup('cootherParam'), 'cochecked': cn_soup('cochecked'),
+              'coentityID': setting.load_config_setting('Auth4a', 'self_conode_id', type='item'), 'cootherParam': cn_soup('cootherParam'), 'cochecked': cn_soup('cochecked'),
               'com_MenuID': cn_soup('com_MenuID'), 'com_ServNum': '', 'com_TouchNum': '',
               'com_Password': cn_soup('com_Password'), 'com_OrgID': cn_soup('com_OrgID'), 'com_RoamOrgID': '',
               'com_PassChangeDate': cn_soup('com_PassChangeDate'), 'com_OperType': cn_soup('com_OperType'),
-              'com_Manager': '0', 'com_Level': '', 'com_ContactPhone': '13800138000',
+              'com_Manager': '0', 'com_Level': '', 'com_ContactPhone': setting.load_config_setting('Auth4a', 'self_phone', type='item'),
               'com_MacAddress': cn_soup('com_MacAddress'), 'com_OnDuty': '0', 'com_ShareStore': '', 'com_BirthDay': '',
               'com_WorkDate': '', 'com_CertID': '', 'com_Sex': '', 'com_EducationLevel': '', 'com_TotalLevel': '',
               'com_SkillLevel': '', 'com_TrainLevel': '', 'com_ComityLevel': '', 'com_Operator_type': '0',
@@ -213,6 +214,7 @@ def iot_phone_query_base_setp2(r, s2, phone_num, _proxies, _auth):
     s = r.post(url3, data=param3, cookies=cn_cookies3, headers=header2, auth=_auth, proxies=_proxies)
     return s
 
+
 def iot_phone_query_base(_r, phone_num, _proxies, _auth, querytype=None):
     s1 = iot_phone_query_base_setp1(_r, phone_num, _proxies, _auth, querytype)
 
@@ -224,6 +226,7 @@ def iot_phone_query_base(_r, phone_num, _proxies, _auth, querytype=None):
 
     iot_phone_query_base_setp2(_r, s1, phone_num, _proxies, _auth)
     return _result
+
 
 def iot_puk(r,  _proxies, _auth):
     url = 'http://10.253.61.8/nguniteview/layoutAction.do?method=showView&ownerType=1&viewId=314'
@@ -304,7 +307,7 @@ def stop_and_open(_r, _type, phone, _proxies, _auth):
              'BARGAINFEEXML': '',
              'CHANGEFEEBYBARGAINXML': '@260@263xml@232version@261@2341@2460@234@232encoding@261@234UTF@2458@234@263@262@260huawei@295call@262@260i@262common@247fee@247@242@260@247i@262@260e@262changeFeeByBargain@260@247e@262@260p@262@260m@262@260n@2620@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260m@262@260n@2621@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260@247p@262@260@247huawei@295call@262&UPDATEPAYTYPEBYPAGEDATAXML=@260@263xml@232version@261@2341@2460@234@232encoding@261@234UTF@2458@234@263@262@260huawei@295call@262@260i@262common@247fee@247@242@260@247i@262@260e@262updatePayTypeByPageData@260@247e@262@260p@262@260m@262@260n@2620@260@247n@262@260t@262a@260@247t@262@260v@262@260@247v@262@260@247m@262@260@247p@262@260@247huawei@295call@262',
              'reccustinfo_name': '', 'reccustinfo_phone': '', 'reccustinfo_certificateType': 'IdCard',
-             'reccustinfo_certificateNum': '440103198607251838', 'reccustinfo_address': '', 'emergencyContactNo': '',
+             'reccustinfo_certificateNum': setting.load_config_setting('Auth4a', 'self_certificate_num', type='item'), 'reccustinfo_address': '', 'emergencyContactNo': '',
              'reccustinfo_note': '', 'invoicePrintMode': '', 'hiddenTokenName': 'fee%2Fcalculate',
              'fee%2Fcalculate': _hiddenTokenName_value, 'receiptNumber': '00000000', 'assembleInvoice': '0',
              'invoiceNumber': '00000000', 'elecInvoiceServNumber': phone, 'isForPaging': 'OLD', 'changeEnumRecType': ''}

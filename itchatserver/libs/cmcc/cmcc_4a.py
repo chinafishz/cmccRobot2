@@ -3,9 +3,7 @@ from bs4 import BeautifulSoup
 import random
 import json
 import _thread
-
-
-
+import libs.cmcc.setting as setting
 
 
 def sms_4a(r, url, param, header, _proxies, _auth):
@@ -14,7 +12,7 @@ def sms_4a(r, url, param, header, _proxies, _auth):
 
 
 def login_4a_1(r, send_sms1, send_sms2, _proxies, _auth):
-    cn_name = "shizhongxia"
+    cn_name = setting.load_config_setting('Auth4a','username', type='item')
     header = {'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0;  TheWorld 7)',
               'Accept': '*/*', 'Accept-Language': 'zh-CN', 'Accept-Encoding': 'gzip, deflate'}
     # sendsms2会变的
@@ -29,7 +27,7 @@ def login_4a_1(r, send_sms1, send_sms2, _proxies, _auth):
 
     url = 'https://4acasp.gmcc.net/jk.do?method=checkUserType&userId=' + cn_name
     result = r.post(url, data={'method': 'checkUserType', 'userId': cn_name}, headers=header, verify=False, proxies=_proxies,auth=_auth)
-    # -----应该返回：SUCCESSG|TshizhongxiaG|T------
+
 
     url = 'https://4acasp.gmcc.net/loginForward.do?target=https://4a.gmcc.net/first.do?method=login&appCode=IAM000&sendsms=' + send_sms1
     parma = {'random_form': loginForm1, 'loginPage': '/auth/nextlogin.jsp', 'smsNameText': cn_name, 'smsName': cn_name}
@@ -52,7 +50,7 @@ def login_4a_1(r, send_sms1, send_sms2, _proxies, _auth):
 def login_4a_2(r, cn_pwd_saw, sms_pwd, loginForm2, _proxies, _auth):
     # 验证
 
-    cn_name = "shizhongxia"
+    cn_name = setting.load_config_setting('Auth4a','username', type='item')
     header = {'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0;  TheWorld 7)',
               'Accept': '*/*', 'Accept-Language': 'zh-CN', 'Accept-Encoding': 'gzip, deflate'}
     url = 'https://4acasp.gmcc.net/loginServlet.do?target=https://4a.gmcc.net/first.do?method=login&authType=noteAuth&appCode=IAM000'
@@ -88,7 +86,7 @@ def iot_login(r, _system_name_list, _proxies, _auth):
     appResAccountList = _system_name_list.split('|')[1]
     id_num = _system_name_list.split('|')[2]
     r.post('https://4a.gmcc.net/page/resource/resourceQuery.do?',
-           data={'method': 'isAuthDateValid', 'subaccName': 'AGZGT0000829'}, headers=header, verify=False,
+           data={'method': 'isAuthDateValid', 'subaccName': setting.load_config_setting('Auth4a', 'self_conode_id', type='item')}, headers=header, verify=False,
            proxies=_proxies, auth=_auth)
 
     param = {'method': 'checkPolicy4JK', 'resId': id_num, 'resAccId': appResAccountList,

@@ -62,9 +62,9 @@ class MainProcess:
                 for _key, _value in need_property.items():
                     if _dic[_key] not in _value:
                         _is = False
-                        continue
+                        break
                 if _is is True:
-                    result.update({param_num: _param})
+                    result.update({param_num + 1: _param})
                     continue
             if _is is False:
                 _list = []

@@ -23,7 +23,7 @@ SETTING_FILE_PATH = ''
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 THRIFTCLIENT= {'state': 'offline', 'last_connet_time': 0, 'isLoginin':False, 'error_count':0}  # 通过thrift 关联的参数
-
+MAINPROCESS = process.MainProcess()
 
 def load_contact(update=False):
     friends_list = itchat.get_friends(update)
@@ -188,9 +188,16 @@ def sendto_LAN_client(msg):
     :param msg: itchat的msg参数
     :return: 没有返回
     '''
+    global  THRIFTCLIENT
     if THRIFTCLIENT['state'] == 'online':
+
         try:
-            result = THRIFTCLIENT['object'].sayMsg(msg.text)
+            if msg.type == TEXT:
+                result = THRIFTCLIENT['object'].saytext(msg.FromUserName, msg.text)
+                print(result)
+            elif msg.type in [PICTURE, VIDEO, ATTACHMENT, RECORDING]:
+                data_binary = msg.text()
+                result = THRIFTCLIENT['object'].saybinary(msg.FromUserName, data_binary)
         except thrift.transport.TTransport.TTransportException as e:
             logger.warning('[失败]sendto_LAN_client:' + str(e))
             THRIFTCLIENT.update({'state': 'offline'})
@@ -209,11 +216,12 @@ def sendto_LAN_client(msg):
             elif result == 'success':
                 THRIFTCLIENT.update({'state': 'online', 'isLoginin':True, 'error_count':0})
                 logger.info('局域网客户端状态更新为上线')
+                sendto_LAN_client(msg)
 
 
 def order_process(msg):
-    process_mainprocess = process.MainProcess()
-    response = process_mainprocess.text_process(msg)
+    global MAINPROCESS
+    response = MAINPROCESS.text_process(msg)
 
     if response is None:
         return
@@ -221,11 +229,11 @@ def order_process(msg):
         if response[0] == 'error':
             return response[1]
         elif response[0] == 'success':
-            deal_result = process_mainprocess.order_deal(response[1])
+            deal_result = MAINPROCESS.order_deal(response[1])
             if deal_result[0] in ['success', 'error']:
-                if type(deal_result[1]) is tuple:
+                if type(deal_result[1]) is list:
                     for i in deal_result[1]:
-                        itchat.send(i, toUserName=msg.UserName)
+                        itchat.send(i, toUserName=msg.FromUserName)
                 else:
                     return deal_result[1]
             elif deal_result[0] == 'warning':
@@ -238,7 +246,7 @@ def order_process(msg):
 
 @itchat.msg_register([TEXT], isFriendChat=True, isGroupChat=True)
 def msg_receive_text(msg):
-    global RELAY_USERNAME, THRIFTCLIENT
+    global RELAY_USERNAME
     sendto_LAN_client(msg) # 发给局域网内的客户端，通过thrift调用
     msg_relay(msg, relay_to=RELAY_USERNAME)
     order_result = order_process(msg) # 命令处理
@@ -247,8 +255,10 @@ def msg_receive_text(msg):
 
 @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isFriendChat=True, isGroupChat=True)
 def img_receive(msg):
+    global RELAY_USERNAME
+    sendto_LAN_client(msg)  # 发给局域网内的客户端，通过thrift调用
     msg_relay(msg, relay_to=RELAY_USERNAME)
-    img_binary  =msg.text()
+
 
 
 

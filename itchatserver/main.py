@@ -1,3 +1,0 @@
-import itchatserver
-
-itchatserver.start()
